@@ -1,0 +1,1305 @@
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>For You</title>
+
+<!-- Menambahkan Font Dancing Script untuk huruf tegak bersambung (latin) -->
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+
+
+:root{
+
+  --bg:#0a0c0f;
+
+  --surface:#111318;
+
+  --card:#161a21;
+
+  --border:rgba(255,255,255,0.07);
+
+  --border-glow:rgba(180,150,100,0.25);
+
+  --gold:#c9a96e;
+
+  --gold-dim:#a07840;
+
+  --white:#f0ece4;
+
+  --muted:rgba(240,236,228,0.45);
+
+  --red-soft:#c96e6e;
+
+  --text:#e8e0d0;
+
+}
+
+
+
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+
+
+
+/* ── SCREENS ── */
+
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;transition:opacity .7s ease,transform .7s ease,visibility .7s;z-index:10}
+
+.screen.out{opacity:0;visibility:hidden;transform:scale(.97) translateY(12px);pointer-events:none;z-index:1}
+
+
+
+/* ═══════════ GATE ═══════════ */
+
+#gate{background:var(--bg);flex-direction:column}
+
+.gate-ambient{
+
+  position:absolute;inset:0;pointer-events:none;
+
+  background:
+
+    radial-gradient(ellipse 60% 50% at 30% 20%,rgba(201,169,110,.06) 0%,transparent 60%),
+
+    radial-gradient(ellipse 50% 40% at 75% 80%,rgba(201,110,110,.04) 0%,transparent 55%);
+
+}
+
+.gate-wrap{position:relative;z-index:2;width:90%;max-width:420px;display:flex;flex-direction:column;gap:0;}
+
+.gate-eyebrow{font-size:11px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+
+.gate-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold-dim)}
+
+.gate-heading{font-family:'Playfair Display',serif;font-size:clamp(32px,7vw,52px);font-weight:400;color:var(--white);line-height:1.1;margin-bottom:10px;}
+
+.gate-heading em{font-style:italic;color:var(--gold)}
+
+.gate-sub{font-size:13px;color:var(--muted);letter-spacing:.04em;margin-bottom:40px;font-weight:300;line-height:1.6;}
+
+
+
+.field{margin-bottom:18px;position:relative;z-index:10;}
+
+.field label{display:block;font-size:10px;letter-spacing:.18em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:10px;font-weight:500;}
+
+.field input{
+
+  width:100%;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;
+
+  color:var(--white);font-size:15px;font-family:'Crimson Pro',serif;font-style:italic;letter-spacing:.04em;outline:none;transition:border .3s,box-shadow .3s;position:relative;z-index:10;
+
+}
+
+.field input::placeholder{color:rgba(240,236,228,.2)}
+
+.field input:focus{border-color:var(--gold-dim);box-shadow:0 0 0 3px rgba(201,169,110,.1)}
+
+
+
+.gate-btn{
+
+  width:100%;margin-top:8px;padding:16px;background:var(--gold);border:none;border-radius:10px;
+
+  color:var(--bg);font-size:13px;letter-spacing:.12em;font-family:'DM Sans',sans-serif;font-weight:500;
+
+  cursor:pointer;transition:all .3s;text-transform:uppercase;position:relative;z-index:10;
+
+}
+
+.gate-btn:hover{background:var(--white);transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,169,110,.25)}
+
+.gate-err{font-size:12px;color:var(--red-soft);text-align:center;margin-top:14px;letter-spacing:.04em;min-height:16px;}
+
+
+
+/* ═══════════ MENU ═══════════ */
+
+#menu{background:var(--bg);flex-direction:column;gap:0}
+
+.menu-ambient{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(201,169,110,.05) 0%,transparent 65%);}
+
+.menu-inner{position:relative;z-index:2;width:90%;max-width:400px}
+
+.menu-top{margin-bottom:48px}
+
+.menu-hello{font-size:12px;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;}
+
+.menu-name{font-family:'Playfair Display',serif;font-size:clamp(36px,9vw,64px);font-weight:400;color:var(--white);line-height:1;margin-bottom:8px;}
+
+.menu-name em{font-style:italic;color:var(--gold)}
+
+.menu-from{font-size:13px;color:var(--muted);letter-spacing:.06em;font-weight:300}
+
+
+
+.menu-list{display:flex;flex-direction:column;gap:2px}
+
+.m-card{display:flex;align-items:center;gap:20px;padding:22px 24px;border-radius:12px;border:1px solid var(--border);background:var(--card);cursor:pointer;transition:all .3s cubic-bezier(.23,1,.32,1);position:relative;overflow:hidden;}
+
+.m-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);transform:scaleY(0);transition:transform .3s;border-radius:0 2px 2px 0;}
+
+.m-card:hover{border-color:var(--border-glow);transform:translateX(6px);background:#1a1e27}
+
+.m-card:hover::before{transform:scaleY(1)}
+
+.m-card-num{font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:var(--gold-dim);flex-shrink:0;line-height:1;width:36px;text-align:center;}
+
+.m-card-text h3{font-family:'Playfair Display',serif;font-weight:400;font-size:17px;color:var(--white);margin-bottom:4px;}
+
+.m-card-text p{font-size:12px;color:var(--muted);letter-spacing:.04em}
+
+.m-card-arr{margin-left:auto;color:var(--gold-dim);font-size:18px;transition:transform .3s}
+
+.m-card:hover .m-card-arr{transform:translateX(4px);color:var(--gold)}
+
+
+
+/* ═══════════ INNER PAGES ═══════════ */
+
+.page{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateX(30px);pointer-events:none;transition:opacity .6s ease,transform .6s ease,visibility .6s;z-index:20}
+
+.page.open{opacity:1;visibility:visible;transform:translateX(0);pointer-events:auto}
+
+.page-header{display:flex;align-items:center;gap:20px;padding:28px 32px 0;flex-shrink:0;}
+
+.back{display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.1em;color:var(--muted);cursor:pointer;transition:color .2s;background:none;border:none;text-transform:uppercase;font-family:'DM Sans',sans-serif;padding:0;}
+
+.back:hover{color:var(--gold)}
+
+.back svg{width:16px;height:16px}
+
+.page-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;font-style:italic;color:var(--white);}
+
+
+
+/* ── SCROLLING LETTER ── */
+
+#p-letter .letter-scroll{flex:1;overflow-y:auto;padding:24px 24px 32px;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,.2) transparent;display:flex;flex-direction:column;align-items:center;}
+
+#p-letter .letter-scroll::-webkit-scrollbar{width:3px}
+
+#p-letter .letter-scroll::-webkit-scrollbar-thumb{background:rgba(201,169,110,.2);border-radius:2px}
+
+.letter-box{max-width:620px;width:100%;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:44px 48px;}
+
+.letter-body{font-family:'Crimson Pro',serif;font-size:clamp(18px,3vw,22px);color:var(--text);line-height:1.85;font-weight:300;}
+
+.letter-body p{margin-bottom:1.3em}
+
+.letter-body p:last-child{margin-bottom:0}
+
+.letter-body strong{color:var(--gold);font-weight:400}
+
+.letter-body em{font-style:italic;color:var(--white)}
+
+.letter-divider{text-align:center;color:var(--gold-dim);font-size:14px;margin:32px 0;letter-spacing:0.2em;opacity:0.5;}
+
+
+
+.btn-surprise{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:14px 32px;border-radius:8px;font-size:13px;letter-spacing:.1em;cursor:pointer;transition:all .3s;text-transform:uppercase;font-family:'DM Sans',sans-serif;margin-top:20px;}
+
+.btn-surprise:hover{background:var(--gold);color:var(--bg);border-color:var(--gold);box-shadow:0 8px 24px rgba(201,169,110,.25)}
+
+
+
+/* ── MEMORIES (ZIG-ZAG & AWAN) ── */
+
+#p-mem .mem-scroll{flex:1;overflow-y:auto;padding:24px 24px 32px;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,.15) transparent;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+
+#p-mem .mem-scroll::-webkit-scrollbar{width:3px}
+
+#p-mem .mem-scroll::-webkit-scrollbar-thumb{background:rgba(201,169,110,.2);border-radius:2px}
+
+
+
+.mem-grid {
+
+  width: 100%; max-width: 500px; display: flex; flex-direction: column; gap: 40px; padding: 20px 0;
+
+}
+
+.mem-item {
+
+  width: 75%; display: flex; flex-direction: column; gap: 12px; position: relative;
+
+}
+
+/* Zig Zag layut */
+
+.mem-item:nth-child(odd) { align-self: flex-start; }
+
+.mem-item:nth-child(even) { align-self: flex-end; text-align: right; }
+
+
+
+.mem-img-wrap {
+
+  width: 100%; aspect-ratio: 1; overflow: hidden; border: 2px solid var(--gold-dim); padding: 5px; 
+
+  background: var(--card); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+
+  transition: transform 0.4s ease;
+
+}
+
+.mem-img-wrap:hover { transform: scale(1.05) rotate(-2deg); }
+
+.mem-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+
+
+/* Macam-macam bentuk Awan/Blob untuk bingkai foto */
+
+.blob-0 .mem-img-wrap { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+
+.blob-1 .mem-img-wrap { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+
+.blob-2 .mem-img-wrap { border-radius: 30% 70% 50% 50% / 50% 50% 70% 30%; }
+
+.blob-3 .mem-img-wrap { border-radius: 50% 50% 20% 80% / 25% 80% 20% 75%; }
+
+.blob-4 .mem-img-wrap { border-radius: 70% 30% 40% 60% / 50% 40% 60% 50%; }
+
+
+
+.mem-info { display: flex; flex-direction: column; gap: 4px; padding: 0 10px; }
+
+.mem-date { font-size: 11px; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; font-weight: bold; }
+
+.mem-text { font-size: 14px; color: var(--white); line-height: 1.5; font-family: 'Crimson Pro', serif; font-style: italic; }
+
+
+
+/* Teks Penutup Latin */
+
+.mem-closing {
+
+  font-family: 'Dancing Script', cursive; font-size: clamp(24px, 5vw, 32px); color: var(--gold); 
+
+  text-align: center; margin-top: 60px; margin-bottom: 40px; padding: 0 20px; line-height: 1.4; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
+}
+
+
+
+/* ── SONGS ── */
+
+#p-songs .songs-scroll{flex:1;overflow-y:auto;padding:24px 24px 32px;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,.15) transparent;display:flex;flex-direction:column;align-items:center;}
+
+#p-songs .songs-scroll::-webkit-scrollbar{width:3px}
+
+#p-songs .songs-scroll::-webkit-scrollbar-thumb{background:rgba(201,169,110,.2);border-radius:2px}
+
+
+
+.song-list{display:flex;flex-direction:column;gap:12px; width:100%; max-width: 500px; margin-top: 20px;}
+
+.song-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;transition:border .25s;}
+
+.song-card.playing{border-color:rgba(201,169,110,.4); background:#1a1e27;}
+
+.play-btn{width:40px;height:40px;border-radius:50%;flex-shrink:0;background:var(--surface);border:1px solid var(--border);color:var(--gold);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;}
+
+.play-btn:hover,.song-card.playing .play-btn{background:var(--gold);color:var(--bg);border-color:var(--gold)}
+
+.song-info{flex:1;min-width:0}
+
+.song-name{font-size:14px;color:var(--white);font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+
+.song-artist{font-size:11px;color:var(--muted);letter-spacing:.05em}
+
+.song-progress{width:100%;height:2px;background:var(--border);border-radius:1px;margin-top:10px;cursor:pointer;position:relative;}
+
+.song-bar{height:100%;background:var(--gold);border-radius:1px;width:0%;transition:width .3s linear;position:absolute;left:0;}
+
+.song-time{font-size:10px;color:var(--muted);letter-spacing:.05em;margin-top:10px;text-align:right}
+
+.song-empty{text-align:center;padding:40px 20px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--muted);}
+
+
+
+/* ═══════════ FLOWER EXPLOSION (POP-UP MEMENUHI LAYAR) ═══════════ */
+
+#flower-explosion {
+
+  position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0); pointer-events:none; visibility:hidden;
+
+  display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
+
+  transition:background 1s ease,visibility 1s;
+
+}
+
+#flower-explosion.show {
+
+  background:rgba(10,12,15,0.95); pointer-events:auto; visibility:visible;
+
+}
+
+
+
+.flower-particle {
+
+  position:absolute; top:50%; left:50%; font-size:30px; opacity:0;
+
+  will-change: transform, opacity;
+
+  /* Animasi dikontrol via Javascript properties */
+
+  animation: bloom 15s cubic-bezier(0.1, 0.4, 0.2, 1) forwards;
+
+}
+
+
+
+@keyframes bloom {
+
+  0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+
+  10% { opacity: 1; }
+
+  90% { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r)); }
+
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(var(--s)) rotate(var(--r)); }
+
+}
+
+
+
+.fx-msg {
+
+  font-family:'Playfair Display',serif; font-style:italic; font-size:clamp(28px,6vw,42px);
+
+  color:var(--white); text-align:center; line-height:1.4; z-index:105;
+
+  opacity:0; transform:scale(0.8); transition:all 1s ease 2s; text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+
+}
+
+#flower-explosion.show .fx-msg { opacity:1; transform:scale(1); }
+
+
+
+.fx-sub {
+
+  font-size:12px; color:var(--gold); letter-spacing:.15em; margin-top:12px; text-transform:uppercase;
+
+  opacity:0; transition:opacity 1s ease 2.5s; z-index:105;
+
+}
+
+#flower-explosion.show .fx-sub { opacity:1; }
+
+
+
+.fx-close {
+
+  margin-top:40px; font-size:11px; letter-spacing:.15em; color:rgba(240,236,228,.5); cursor:pointer;
+
+  text-transform:uppercase; opacity:0; transition:opacity 1s ease 3.5s; background:none; border:none;
+
+  font-family:'DM Sans',sans-serif; z-index:105; padding: 10px 20px; border: 1px solid rgba(240,236,228,.2); border-radius: 20px;
+
+}
+
+#flower-explosion.show .fx-close { opacity:1; }
+
+.fx-close:hover { background:rgba(240,236,228,.1); color:var(--white); }
+
+
+
+@media(max-width:480px){
+
+  .letter-box{padding:32px 24px}
+
+  .page-header{padding:20px 20px 0}
+
+  .gate-wrap{max-width:360px}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<!-- ═══════ GATE ═══════ -->
+
+<div class="screen" id="gate">
+
+  <div class="gate-ambient"></div>
+
+  <div class="gate-wrap">
+
+    <div class="gate-eyebrow">Something made with love</div>
+
+    <div class="gate-heading">This is<br><em>for you.</em></div>
+
+    <div class="gate-sub">Hanya bisa dibuka jika kamu<br>mengisi nama pada form ini.</div>
+
+
+
+    <div class="field">
+
+      <label>Siapa kamu?</label>
+
+      <input type="text" id="inp-r" placeholder="Nama kamu..." autocomplete="off" onkeydown="if(event.key==='Enter')doGate()">
+
+    </div>
+
+    <div class="field">
+
+      <label>Dari siapa ini?</label>
+
+      <input type="text" id="inp-s" placeholder="Nama pengirim..." autocomplete="off" onkeydown="if(event.key==='Enter')doGate()">
+
+    </div>
+
+    <button class="gate-btn" onclick="doGate()">Buka</button>
+
+    <div class="gate-err" id="gerr"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════ MENU ═══════ -->
+
+<div class="screen out" id="menu">
+
+  <div class="menu-ambient"></div>
+
+  <div class="menu-inner">
+
+    <div class="menu-top">
+
+      <div class="menu-hello">Hello,</div>
+
+      <div class="menu-name" id="mname">...</div>
+
+      <div class="menu-from" id="mfrom">— with love, from ... —</div>
+
+    </div>
+
+    <div class="menu-list">
+
+      <div class="m-card" onclick="openPage('p-letter')">
+
+        <div class="m-card-num">I</div>
+
+        <div class="m-card-text">
+
+          <h3>A Letter for You</h3>
+
+          <p>Sesuatu yang ingin aku sampaikan</p>
+
+        </div>
+
+        <div class="m-card-arr">→</div>
+
+      </div>
+
+      <div class="m-card" onclick="openPage('p-mem')">
+
+        <div class="m-card-num">II</div>
+
+        <div class="m-card-text">
+
+          <h3>Our Memories</h3>
+
+          <p>Momen-momen yang kita jalani bersama</p>
+
+        </div>
+
+        <div class="m-card-arr">→</div>
+
+      </div>
+
+      <div class="m-card" onclick="openPage('p-songs')">
+
+        <div class="m-card-num">III</div>
+
+        <div class="m-card-text">
+
+          <h3>You, but in Songs</h3>
+
+          <p>Lagu-lagu yang mengingatkanku padamu</p>
+
+        </div>
+
+        <div class="m-card-arr">→</div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════ SCROLLING LETTER PAGE ═══════ -->
+
+<div class="page" id="p-letter">
+
+  <div class="page-header">
+
+    <button class="back" onclick="closePage('p-letter')">
+
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg>
+
+      Kembali
+
+    </button>
+
+    <div class="page-title">A Letter for You</div>
+
+    <div style="width:80px"></div>
+
+  </div>
+
+  
+
+  <div class="letter-scroll">
+
+    <div class="letter-box">
+
+      <div class="letter-body">
+
+        
+
+        <p>Hallow <strong id="panggilan-sayang">sayangkuuu</strong>, gimana bobonyaa? Pasti nyenyak ya sayang.</p>
+
+        <p>Sayang, I wanna say something.</p>
+
+        <p>Aku mau bilang terima kasih karena telah hadir di dunia ini. Terima kasih karena sudah menjadi alasan seseorang semangat menjalani hidup.</p>
+
+        <p>Aku ingin kamu tau kalau hadirmu membawa kebahagiaan, memberikan ketenangan, dan menjadi cahaya yang menyinari hariku.</p>
+
+        
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+        
+
+        <p>Honestly, I don't think you'll ever realize how much your presence means to me.</p>
+
+        <p>Kadang tanpa kamu sadari, hal-hal kecil yang kamu lakuin bisa bikin hariku jauh lebih baik.</p>
+
+        <p>Bahkan di hari-hari yang berat sekalipun, <em>knowing that you're here somehow makes everything feel lighter.</em></p>
+
+        
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+        
+
+        <p>Suaramu adalah musik terindah yang pernah aku denger byy.</p>
+
+        <p>Tiap liat kamu aku berasa lagi lihat keindahan dunia, dunia yang penuh kebahagiaan dan hal-hal baik.</p>
+
+        <p>Saat sama kamu aku ngerasa selalu penuh, aku merasa <strong>utuh</strong>.</p>
+
+        <p>Terima kasih karena sudah selalu menerima kurangnya aku dan selalu support aku dalam banyak hal.</p>
+
+
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+
+
+        <p>Aku bener-bener ga nyangka bisa jatuh cinta sama kamu. Iya sayang, <strong>sama kamu.</strong></p>
+
+        <p>Aku juga ga nyangka bisa jalanin semua ini sama kamu. Kadang kalau diinget-inget gimana dulu kita pertama kali komunikasi, lucu juga ya sayang.</p>
+
+        <p>Dari yang awalnya cuma strangers lalu jadi teman ngobrol sampai akhirnya bisa sedekat ini.</p>
+
+        <p><em>If someone told me back then that you'd become one of the most important people in my life, I probably wouldn't believe it.</em></p>
+
+
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+
+
+        <p>Sayang aku pengen kamu tau kalau aku sangat sangat bersyukur bisa berbagi waktu, kebahagiaan, dan mengukir cerita sama kamu.</p>
+
+        <p>Aku bersyukur atas setiap moment yang pernah kita lalui.</p>
+
+        <p><em>Every laugh, every random conversation, every little memory we made together means so much to me.</em></p>
+
+        <p>Bahkan hal-hal sederhana yang mungkin terlihat biasa aja, buat aku tetap punya tempat tersendiri karena semuanya terjadi <strong>sama kamu.</strong></p>
+
+
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+
+
+        <p>Aku juga pengen kamu tau kalau aku akan selalu ada di sampingmu.</p>
+
+        <p>Menjadi salah satu orang yang akan selalu bangga atas setiap pencapaianmu, menemani setiap prosesmu, mendukung setiap langkahmu, peduli tentang kamu, dan selalu mendoakan semua yang terbaik untukmu.</p>
+
+        <p><em>I want to be the person who cheers for you the loudest,</em> yang ikut bahagia saat kamu bahagia, ikut bangga saat kamu berhasil, dan tetap ada saat keadaan nggak berjalan sesuai yang kamu harapkan.</p>
+
+
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+
+
+        <p>Kalau suatu hari kamu capek atau merasa semuanya terlalu berat, please remember this. Kamu nggak harus menghadapi semuanya sendirian.</p>
+
+        <p>Aku akan selalu jadi tempat kamu pulang, tempat kamu cerita, tempat kamu beristirahat ketika dunia terasa terlalu ramai.</p>
+
+        <p>Mungkin aku nggak selalu punya solusi untuk semua masalahmu, <em>but I'll always be here to listen and stay.</em></p>
+
+        <p>And one thing you should <strong>never</strong> doubt sayang, is how proud I am of you.</p>
+
+        <p>Aku bangga sama semua usaha yang kamu lakuin, bangga sama cara kamu bertahan sampai sejauh ini, dan bangga sama semua proses yang sedang kamu jalani sekarang.</p>
+
+        <p>Mungkin nggak semua orang bisa lihat seberapa keras kamu berjuang, <em>but I do.</em></p>
+
+
+
+        <div class="letter-divider">✦ ✧ ✦</div>
+
+
+
+        <p><strong>Thank you for being you.</strong></p>
+
+        <p>Thank you for your kindness, your patience, your effort, and every little thing that makes you, you.</p>
+
+        <p>Aku nggak tahu apa yang akan terjadi di masa depan. <em>But if there's one thing I'm sure of, it's that meeting you is one of the best things that ever happened to me.</em></p>
+
+        <p>Dan sampai hari ini, aku masih merasa menjadi orang yang beruntung karena bisa mengenalmu, bisa dekat denganmu, dan bisa menjadi bagian dari cerita hidupmu.</p>
+
+        <p>So please take care of yourself, okay? Eat well, sleep well, jangan terlalu capek, dan jangan pernah lupa kalau ada seseorang di sini yang selalu percaya sama kamu, selalu mendukung kamu, dan selalu mendoakan yang terbaik untuk kamu.</p>
+
+        <p>Because no matter how many days pass, no matter how busy life gets, <em>I'll always be grateful that I met you.</em></p>
+
+        
+
+        <p style="margin-top:2em;font-size:1.1em">And if someday you ask me what my favorite thing is about this life, my answer will always be the same.</p>
+
+        <p style="font-size:1.25em;color:#c9a96e;font-style:italic;text-align:center;margin-top:.5em;margin-bottom:2em;"><strong>It's you ❤</strong></p>
+
+
+
+        <div style="text-align:center; margin-top:40px; margin-bottom:20px;">
+
+          <button class="btn-surprise" onclick="triggerFlowerExplosion()">Ada Sesuatu Untukmu ✦</button>
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════ MEMORIES PAGE ═══════ -->
+
+<div class="page" id="p-mem">
+
+  <div class="page-header">
+
+    <button class="back" onclick="closePage('p-mem')">
+
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg>
+
+      Kembali
+
+    </button>
+
+    <div class="page-title">Our Memories</div>
+
+    <div style="width:80px"></div>
+
+  </div>
+
+  <div class="mem-scroll">
+
+    <div class="mem-grid" id="mem-container">
+
+      <!-- Foto & Kenangan akan digenerate otomatis oleh Javascript di sini -->
+
+    </div>
+
+    <div class="mem-closing">
+
+      -Still not many memories yet, but I hope we’ll have more time to grow together and make this our story.-
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════ SONGS PAGE ═══════ -->
+
+<div class="page" id="p-songs">
+
+  <div class="page-header">
+
+    <button class="back" onclick="closePage('p-songs')">
+
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg>
+
+      Kembali
+
+    </button>
+
+    <div class="page-title">You, but in Songs</div>
+
+    <div style="width:80px"></div>
+
+  </div>
+
+  <div class="songs-scroll">
+
+    <div class="song-list" id="song-container">
+
+      <!-- Lagu akan digenerate otomatis oleh Javascript di sini -->
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ═══════ FLOWER EXPLOSION ═══════ -->
+
+<div id="flower-explosion">
+
+  <!-- Bunga-bunga akan digenerate di sini oleh JS -->
+
+</div>
+
+
+
+<script>
+
+// =========================================================================
+
+// 🌸 PENGATURAN DATA FOTO, TEKS, DAN LAGU (EDIT HANYA DI BAGIAN INI!) 🌸
+
+// =========================================================================
+
+
+
+// 1. DATA KENANGAN (Maksimal 10)
+
+// Hapus atau kosongkan teks jika foto kurang dari 10.
+
+// Ganti bagian "LINK_FOTO_DISINI" dengan link fotomu dari postimages.org
+
+const DATA_KENANGAN = [
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.33.58%20(1).jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.33.58.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.33.59%20(1).jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.33.59%20(2).jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.33.59.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.34.41.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.36.20%20(1).jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.36.20.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2001.36.22.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2006.29.49.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2007.46.58.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2007.47.54.jpeg", tanggal: "", pesan: "" },
+
+  { foto: "https://nandakp6.github.io/foryou/WhatsApp%20Image%202026-06-17%20at%2007.47.55.jpeg", tanggal: "", pesan: "" }
+
+];
+
+
+
+// 2. DATA LAGU
+
+const DATA_LAGU = [
+
+  { judul: "seasons - wave to earth", file: "https://nandakp6.github.io/foryou/wave%20to%20earth%20-%20seasons%20%5BCnVVjLOGVoY%5D.mp3" },
+
+  { judul: "Happiness - Rex Orange County", file: "https://nandakp6.github.io/foryou/Rex%20Orange%20County%20-%20Happiness%20(Official%20Audio)%20%5BdstuitW8PWM%5D.mp3" },
+
+  { judul: "you! - LANY", file: "https://nandakp6.github.io/foryou/LANY%20-%20you_%20(official%20video)%20%5BHEAn4FqXFY4%5D.mp3" },
+
+  { judul: "You Got It All - The Jets", file: "https://nandakp6.github.io/foryou/The%20Jets%20-%20You%20Got%20It%20All%20(Official%20Music%20Video)%20%5BDr1pZHPExlE%5D.mp3" },
+
+  { judul: "EVERYTHING - The Black Skirts", file: "https://nandakp6.github.io/foryou/%5BMV%5D%20%EA%B2%80%EC%A0%95%EC%B9%98%EB%A7%88(The%20Black%20Skirts)%20-%20'EVERYTHING'%20%5BAq_gsctWHtQ%5D.mp3" },
+
+  { judul: "bad - wave to earth", file: "https://nandakp6.github.io/foryou/wave%20to%20earth%20-%20bad%20(Official%20Lyric%20Video)%20%5B6Q5xqNkCk7w%5D.mp3" }
+
+];
+
+
+
+// =========================================================================
+
+// JANGAN UBAH KODE DI BAWAH INI KECUALI KAMU PAHAM JAVASCRIPT!
+
+// =========================================================================
+
+
+
+// ── STATE ──
+
+let songsObjects = [];
+
+let curSong = -1;
+
+
+
+// ── GATE ──
+
+function doGate(){
+
+  const r = document.getElementById('inp-r').value.trim();
+
+  const s = document.getElementById('inp-s').value.trim();
+
+  const err = document.getElementById('gerr');
+
+  
+
+  if(r === '' || s === '') {
+
+    err.textContent = 'Mohon isikan kedua nama terlebih dahulu.';
+
+    return;
+
+  }
+
+
+
+  // ── KUNCI WEB: hanya nama-nama tertentu yang boleh masuk ──
+
+  const ALLOWED_RECIPIENTS = ["MALIKH", "RYO", "ATHAR"];
+
+  const ALLOWED_SENDER = "ANANDA";
+
+
+
+  if(!ALLOWED_RECIPIENTS.includes(r.toUpperCase()) || s.toUpperCase() !== ALLOWED_SENDER) {
+
+    err.textContent = 'Nama tidak dikenal, silakan coba lagi.';
+
+    return;
+
+  }
+
+  
+
+  err.textContent='';
+
+  document.getElementById('mname').innerHTML = r;
+
+  document.getElementById('panggilan-sayang').innerHTML = r;
+
+  document.getElementById('mfrom').innerHTML = '— with love, from ' + s + ' —';
+
+
+
+  document.getElementById('gate').classList.add('out');
+
+  setTimeout(()=>{
+
+    document.getElementById('gate').style.display='none';
+
+    document.getElementById('menu').classList.remove('out');
+
+  },700);
+
+}
+
+
+
+// ── PAGE NAV ──
+
+function openPage(id){ document.getElementById(id).classList.add('open'); }
+
+function closePage(id){ document.getElementById(id).classList.remove('open'); }
+
+
+
+// ── RENDER KENANGAN (ZIG ZAG AWAN) ──
+
+function renderMemories() {
+
+  const container = document.getElementById('mem-container');
+
+  container.innerHTML = '';
+
+  
+
+  let count = 0;
+
+  DATA_KENANGAN.forEach((item, index) => {
+
+    // Abaikan jika tidak ada link fotonya atau link masih berupa tulisan placeholder
+
+    if (!item.foto || item.foto.includes("LINK_FOTO_DISINI") || item.foto.trim() === "") return;
+
+    
+
+    count++;
+
+    const div = document.createElement('div');
+
+    // Memilih bentuk blob awan secara acak/berurutan
+
+    const blobClass = 'blob-' + (index % 5);
+
+    div.className = `mem-item ${blobClass}`;
+
+    
+
+    div.innerHTML = `
+
+      <div class="mem-img-wrap">
+
+        <img src="${item.foto}" alt="Memori" onerror="this.parentElement.style.display='none'">
+
+      </div>
+
+      <div class="mem-info">
+
+        ${item.tanggal ? `<div class="mem-date">${item.tanggal}</div>` : ''}
+
+        ${item.pesan ? `<div class="mem-text">${item.pesan}</div>` : ''}
+
+      </div>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+
+
+  if(count === 0) {
+
+    container.innerHTML = '<div class="song-empty">Foto kenangan belum diisi di dalam kode HTML.</div>';
+
+  }
+
+}
+
+
+
+// ── RENDER LAGU ──
+
+function initSongs() {
+
+  const c = document.getElementById('song-container');
+
+  const pengirim = document.getElementById('inp-s').value.trim() || 'Seseorang';
+
+  
+
+  // Saring lagu yang linknya kosong/placeholder
+
+  const validSongs = DATA_LAGU.filter(l => l.file && !l.file.includes("LINK_LAGU_DISINI") && l.file.trim() !== "");
+
+
+
+  if(validSongs.length === 0){ 
+
+    c.innerHTML = '<div class="song-empty">Belum ada lagu yang diatur di dalam kode HTML ✦</div>'; 
+
+    return; 
+
+  }
+
+
+
+  c.innerHTML = '';
+
+  songsObjects = [];
+
+
+
+  validSongs.forEach((s, i) => {
+
+    const audio = new Audio(s.file);
+
+    const obj = { name: s.judul, audio: audio, dur: '0:00' };
+
+    
+
+    audio.addEventListener('loadedmetadata', () => {
+
+      obj.dur = fmtTime(audio.duration);
+
+      document.getElementById(`time-${i}`).textContent = `0:00 / ${obj.dur}`;
+
+    });
+
+    audio.addEventListener('timeupdate', () => updateBar(i));
+
+    audio.addEventListener('ended', () => { if(curSong === i) curSong = -1; renderSongUI(); });
+
+    
+
+    songsObjects.push(obj);
+
+
+
+    const div = document.createElement('div');
+
+    div.className = 'song-card';
+
+    div.id = 'sc-' + i;
+
+    div.innerHTML = `
+
+      <button class="play-btn" id="playbtn-${i}" onclick="toggleSong(${i})">▶</button>
+
+      <div class="song-info">
+
+        <div class="song-name">${s.judul}</div>
+
+        <div class="song-artist">Spesial dariku</div>
+
+        <div class="song-progress" onclick="seekSong(${i},event)">
+
+          <div class="song-bar" id="bar-${i}"></div>
+
+        </div>
+
+        <div class="song-time" id="time-${i}">0:00 / 0:00</div>
+
+      </div>
+
+    `;
+
+    c.appendChild(div);
+
+  });
+
+}
+
+
+
+function toggleSong(i){
+
+  const obj = songsObjects[i];
+
+  if(curSong === i && !obj.audio.paused){
+
+    obj.audio.pause();
+
+  } else {
+
+    if(curSong >= 0 && curSong !== i) songsObjects[curSong].audio.pause();
+
+    curSong = i; 
+
+    obj.audio.play().catch(e => console.log("Audio play diizinkan setelah interaksi", e));
+
+  }
+
+  renderSongUI();
+
+}
+
+
+
+function renderSongUI() {
+
+  songsObjects.forEach((s, i) => {
+
+    const card = document.getElementById('sc-'+i);
+
+    const btn = document.getElementById('playbtn-'+i);
+
+    const isPlaying = (curSong === i && !s.audio.paused);
+
+    
+
+    if(isPlaying) {
+
+      card.classList.add('playing');
+
+      btn.textContent = '❚❚';
+
+    } else {
+
+      card.classList.remove('playing');
+
+      btn.textContent = '▶';
+
+    }
+
+  });
+
+}
+
+
+
+function updateBar(i){
+
+  const s = songsObjects[i];
+
+  const pct = s.audio.duration ? (s.audio.currentTime / s.audio.duration) * 100 : 0;
+
+  document.getElementById('bar-'+i).style.width = pct + '%';
+
+  document.getElementById('time-'+i).textContent = fmtTime(s.audio.currentTime) + ' / ' + s.dur;
+
+}
+
+
+
+function seekSong(i, e){
+
+  const s = songsObjects[i]; if(!s.audio.duration) return;
+
+  const bar = e.currentTarget;
+
+  const pct = (e.clientX - bar.getBoundingClientRect().left) / bar.offsetWidth;
+
+  s.audio.currentTime = pct * s.audio.duration;
+
+}
+
+
+
+function fmtTime(s){
+
+  if(!s||isNaN(s)) return '0:00';
+
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+
+  return m + ':' + (sec<10?'0':'') + sec;
+
+}
+
+
+
+// ── FLOWER EXPLOSION (POP-UP MEMENUHI LAYAR) ──
+
+function triggerFlowerExplosion() {
+
+  const container = document.getElementById('flower-explosion');
+
+  container.innerHTML = ''; // Bersihkan kontainer
+
+  container.classList.add('show');
+
+
+
+  // Emoji bunga yang akan meledak
+
+  const flowers = ['🌸','🌺','🌻','🌼','🌷','🌹','💐','💮','✨','💖'];
+
+  const count = 300; // Jumlah partikel bunga
+
+
+
+  for(let i=0; i<count; i++) {
+
+    const f = document.createElement('div');
+
+    f.className = 'flower-particle';
+
+    f.textContent = flowers[Math.floor(Math.random() * flowers.length)];
+
+    f.style.animationDelay = (Math.random() * 5) + 's';
+
+
+
+    // Kalkulasi arah ledakan (radius melingkar, bisa sampai ke luar layar)
+
+    const angle = Math.random() * Math.PI * 2;
+
+    const radius = 100 + Math.random() * (window.innerWidth * 0.9);
+
+
+
+    f.style.setProperty('--tx', Math.cos(angle) * radius + 'px');
+
+    f.style.setProperty('--ty', Math.sin(angle) * radius + 'px');
+
+    f.style.setProperty('--s', 3 + Math.random() * 5);
+
+    f.style.setProperty('--r', (Math.random() * 720) + 'deg');
+
+
+
+    container.appendChild(f);
+
+  }
+
+
+
+  // Memunculkan pesan di tengah layar setelah bunga mekar (detik ke-12)
+
+  const pengirim = document.getElementById('inp-s').value.trim() || 'Ananda';
+
+  setTimeout(() => {
+
+    container.innerHTML = `<div class="fx-msg" style="cursor:pointer;">For you, always.<br><span style="font-size:20px; opacity:0.7;">With love, ${pengirim}</span></div>`;
+
+    container.onclick = () => container.classList.remove('show');
+
+  }, 12000);
+
+}
+
+
+
+// ── INIT ──
+
+window.onload = () => {
+
+  renderMemories();
+
+  initSongs();
+
+};
+
+</script>
+
+</body>
+
+</html>
